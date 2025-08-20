@@ -113,3 +113,8 @@ func (s *GormStore) Close() error {
 	}
 	return sqlDB.Close()
 }
+
+// GetDB 获取GORM DB实例
+func (s *GormStore) GetDB() *gorm.DB {
+	return s.db
+}

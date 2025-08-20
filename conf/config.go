@@ -16,6 +16,7 @@ type Config struct {
 	Database DatabaseConfig `yaml:"database"`
 	Redis    RedisConfig    `yaml:"redis"`
 	Cache    CacheConfig    `yaml:"cache"`
+	Tasks    TasksConfig    `yaml:"tasks"`
 }
 
 // ServerConfig 服务器配置
@@ -68,6 +69,19 @@ type RedisConfig struct {
 type CacheConfig struct {
 	Type     string `yaml:"type"`
 	Capacity int    `yaml:"capacity"`
+}
+
+// TasksConfig 定时任务配置
+type TasksConfig struct {
+	CleanExpiredLinks CleanExpiredLinksConfig `yaml:"cleanExpiredLinks"`
+}
+
+// CleanExpiredLinksConfig 清理过期短链接任务配置
+type CleanExpiredLinksConfig struct {
+	Cron               string `yaml:"cron"`
+	Enabled            bool   `yaml:"enabled"`
+	BatchSize          int    `yaml:"batchSize"`
+	HistoryTablePrefix string `yaml:"historyTablePrefix"`
 }
 
 // LoadConfig 从文件加载配置

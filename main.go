@@ -22,6 +22,11 @@ func main() {
 	srv := server.NewServer(application.Config, application.Store)
 	srv.Initialize()
 
+	// 启动定时任务调度器
+	if application.TaskScheduler != nil {
+		application.TaskScheduler.Start()
+	}
+
 	// 启动服务器
 	srv.Start()
 
