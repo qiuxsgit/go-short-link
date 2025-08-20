@@ -2,6 +2,9 @@
 
 # 服务配置
 server:
+  # Gin模式: debug或release
+  ginMode: "debug"
+  
   # 管理API服务配置（创建短链接）
   admin:
     port: 8081
@@ -31,6 +34,15 @@ database:
   maxIdleConns: 10
   maxOpenConns: 100
   connMaxLifetime: 3600
+
+# Redis配置
+redis:
+  addr: "localhost:6379"
+  password: ""
+  db: 0
+  poolSize: 10
+  idKeyPrefix: "seq:"  # ID生成器的键前缀
+  idStep: 100  # 每次从Redis获取的ID数量
 
 # 缓存配置
 cache:

@@ -31,6 +31,7 @@
 - **MySQL数据库**：持久化存储所有短链接数据
 - **内存LRU缓存**：存储最多1000条热点短链接数据，提高访问性能
 - **缓存淘汰策略**：当缓存达到容量上限时，自动淘汰最不常用的短链接
+- **Redis ID生成器**：使用Redis生成分布式唯一ID，支持水平扩展
 
 ### 服务分离
 
@@ -59,7 +60,9 @@ go-short-link/
 ├── server/               # 服务器管理
 │   └── server.go         # 服务器初始化和生命周期管理
 ├── utils/                # 工具函数
-│   └── shortcode.go      # 短链接生成工具
+│   ├── shortcode.go      # 短链接生成工具
+│   ├── idgenerator.go    # Redis ID生成器（旧版）
+│   └── gorm_id_generator.go # GORM Redis ID生成器插件
 ├── main.go               # 应用程序入口
 ├── go.mod                # Go模块定义
 ├── go.sum                # 依赖校验和
@@ -177,6 +180,15 @@ database:
   maxIdleConns: 10
   maxOpenConns: 100
   connMaxLifetime: 3600
+
+# Redis配置
+redis:
+  addr: "localhost:6379"
+  password: ""
+  db: 0
+  poolSize: 10
+  idKeyPrefix: "seq:"  # ID生成器的键前缀
+  idStep: 100  # 每次从Redis获取的ID数量
 
 # 缓存配置
 cache:
@@ -299,6 +311,26 @@ docker-compose up -d
 4. 定期备份数据库
 5. 使用容器编排工具（如Kubernetes）进行部署和管理
 
+## 分布式ID生成
+
+系统使用Redis实现了分布式ID生成器，具有以下特点：
+
+1. **基于GORM插件**：作为GORM插件集成，自动为新记录生成ID
+2. **通用设计**：使用`seq:{表名}`作为键前缀，支持多个表的ID生成
+3. **批量获取**：每次从Redis获取一批ID（默认100个），减少网络请求
+4. **高性能**：本地缓存ID段，大幅减少Redis访问频率
+5. **容错机制**：内置重试逻辑，提高系统稳定性
+
+### ID生成器工作原理
+
+1. 初始化时，ID生成器注册为GORM的回调函数
+2. 创建记录时，检查主键是否为零值
+3. 如果是零值，则为该表生成一个新的唯一ID
+4. ID生成器会批量从Redis获取ID段，并在本地缓存
+5. 当本地缓存的ID用完后，再次从Redis获取新的ID段
+
+这种设计既保证了ID的唯一性，又提高了系统性能，同时支持水平扩展。
+
 ## 性能优化
 
 系统已经实现了一些性能优化措施：
@@ -306,6 +338,7 @@ docker-compose up -d
 1. 使用LRU缓存减少数据库访问
 2. 异步更新访问计数
 3. 使用连接池管理数据库连接
+4. 批量获取Redis ID，减少网络请求
 
 对于高负载场景，可以考虑以下优化：
 

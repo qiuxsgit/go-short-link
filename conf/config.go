@@ -14,13 +14,15 @@ import (
 type Config struct {
 	Server   ServerConfig   `yaml:"server"`
 	Database DatabaseConfig `yaml:"database"`
+	Redis    RedisConfig    `yaml:"redis"`
 	Cache    CacheConfig    `yaml:"cache"`
 }
 
 // ServerConfig 服务器配置
 type ServerConfig struct {
-	Admin  AdminServerConfig  `yaml:"admin"`
-	Access AccessServerConfig `yaml:"access"`
+	Admin   AdminServerConfig  `yaml:"admin"`
+	Access  AccessServerConfig `yaml:"access"`
+	GinMode string             `yaml:"ginMode"` // gin模式: debug或release
 }
 
 // AdminServerConfig 管理API服务配置
@@ -50,6 +52,16 @@ type DatabaseConfig struct {
 	MaxIdleConns    int    `yaml:"maxIdleConns"`
 	MaxOpenConns    int    `yaml:"maxOpenConns"`
 	ConnMaxLifetime int    `yaml:"connMaxLifetime"`
+}
+
+// RedisConfig Redis配置
+type RedisConfig struct {
+	Addr        string `yaml:"addr"`
+	Password    string `yaml:"password"`
+	DB          int    `yaml:"db"`
+	PoolSize    int    `yaml:"poolSize"`
+	IDKeyPrefix string `yaml:"idKeyPrefix"`
+	IDStep      int64  `yaml:"idStep"`
 }
 
 // CacheConfig 缓存配置

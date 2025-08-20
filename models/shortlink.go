@@ -6,7 +6,7 @@ import (
 
 // ShortLink 表示短链接的数据结构
 type ShortLink struct {
-	ID          string    `json:"id"`
+	ID          int64     `json:"id"`
 	OriginalURL string    `json:"originalUrl"`
 	ShortCode   string    `json:"shortCode"`
 	CreatedAt   time.Time `json:"createdAt"`

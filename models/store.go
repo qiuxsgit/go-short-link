@@ -6,6 +6,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/qiuxsgit/go-short-link/utils"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -24,12 +25,12 @@ type Store interface {
 
 // DBShortLink 是数据库中短链接的模型
 type DBShortLink struct {
-	ID          string    `gorm:"primaryKey;type:varchar(64)"`
-	ShortCode   string    `gorm:"uniqueIndex;type:varchar(16)"`
-	OriginalURL string    `gorm:"type:text"`
+	ID          int64  `gorm:"primaryKey;type:bigint(20);not null;auto_increment:false"`
+	ShortCode   string `gorm:"uniqueIndex;type:varchar(16)"`
+	OriginalURL string `gorm:"type:text"`
 	CreatedAt   time.Time
 	ExpiresAt   time.Time
-	AccessCount int64     `gorm:"default:0"`
+	AccessCount int64 `gorm:"default:0"`
 	LastAccess  time.Time
 }
 
@@ -123,12 +124,13 @@ func (c *LRUCache) Put(key string, value *ShortLink) {
 
 // HybridStore 混合存储实现（MySQL + 内存缓存）
 type HybridStore struct {
-	db    *gorm.DB
-	cache *LRUCache
+	db          *gorm.DB
+	cache       *LRUCache
+	idGenerator *utils.IDGenerator
 }
 
 // NewHybridStore 创建新的混合存储
-func NewHybridStore(dsn string, cacheSize int) (*HybridStore, error) {
+func NewHybridStore(dsn string, cacheSize int, idGenerator *utils.IDGenerator) (*HybridStore, error) {
 	// 连接MySQL数据库
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
@@ -143,13 +145,23 @@ func NewHybridStore(dsn string, cacheSize int) (*HybridStore, error) {
 	}
 
 	return &HybridStore{
-		db:    db,
-		cache: NewLRUCache(cacheSize),
+		db:          db,
+		cache:       NewLRUCache(cacheSize),
+		idGenerator: idGenerator,
 	}, nil
 }
 
 // Save 保存短链接到存储中
 func (s *HybridStore) Save(shortLink *ShortLink) error {
+	// 生成唯一ID
+	if shortLink.ID == 0 {
+		id, err := s.idGenerator.NextID()
+		if err != nil {
+			return err
+		}
+		shortLink.ID = id
+	}
+
 	// 保存到数据库
 	dbLink := FromShortLink(shortLink)
 	if err := s.db.Create(dbLink).Error; err != nil {

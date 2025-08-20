@@ -36,7 +36,6 @@ func (h *ShortLinkHandler) CreateShortLink(c *gin.Context) {
 
 	// 创建短链接记录
 	shortLink := &models.ShortLink{
-		ID:          shortCode,
 		OriginalURL: req.Link,
 		ShortCode:   shortCode,
 		CreatedAt:   time.Now(),

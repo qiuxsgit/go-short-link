@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"time"
 
@@ -32,6 +33,13 @@ func NewServer(config *conf.Config, store models.Store) *Server {
 
 // Initialize 初始化服务器
 func (s *Server) Initialize() {
+	// 设置Gin模式
+	if s.config.Server.GinMode == "release" {
+		gin.SetMode(gin.ReleaseMode)
+	} else {
+		gin.SetMode(gin.DebugMode)
+	}
+
 	// 创建管理API处理器
 	adminHandler := handlers.NewShortLinkHandler(s.store, s.config.Server.Admin.BaseURL)
 
@@ -63,20 +71,60 @@ func (s *Server) Initialize() {
 func (s *Server) Start() {
 	// 启动管理API服务器
 	go func() {
-		log.Printf("管理API服务启动在 %s (端口: %d)...\n",
+		// 创建一个通道来通知服务器已启动
+		started := make(chan struct{})
+
+		// 在单独的goroutine中启动服务器
+		go func() {
+			// 监听端口
+			listener, err := net.Listen("tcp", fmt.Sprintf(":%d", s.config.Server.Admin.Port))
+			if err != nil {
+				log.Fatalf("管理API服务器启动失败: %v", err)
+				return
+			}
+
+			// 通知主goroutine服务器已准备好接受连接
+			close(started)
+
+			// 使用已创建的监听器提供服务
+			if err := s.adminServer.Serve(listener); err != nil && err != http.ErrServerClosed {
+				log.Fatalf("管理API服务器运行失败: %v", err)
+			}
+		}()
+
+		// 等待服务器启动
+		<-started
+		log.Printf("Listening and serving HTTP on %s (端口: %d)...\n",
 			s.config.Server.Admin.BaseURL, s.config.Server.Admin.Port)
-		if err := s.adminServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("管理API服务器启动失败: %v", err)
-		}
 	}()
 
 	// 启动访问API服务器
 	go func() {
-		log.Printf("访问API服务启动在 %s (端口: %d)...\n",
+		// 创建一个通道来通知服务器已启动
+		started := make(chan struct{})
+
+		// 在单独的goroutine中启动服务器
+		go func() {
+			// 监听端口
+			listener, err := net.Listen("tcp", fmt.Sprintf(":%d", s.config.Server.Access.Port))
+			if err != nil {
+				log.Fatalf("访问API服务器启动失败: %v", err)
+				return
+			}
+
+			// 通知主goroutine服务器已准备好接受连接
+			close(started)
+
+			// 使用已创建的监听器提供服务
+			if err := s.accessServer.Serve(listener); err != nil && err != http.ErrServerClosed {
+				log.Fatalf("访问API服务器运行失败: %v", err)
+			}
+		}()
+
+		// 等待服务器启动
+		<-started
+		log.Printf("Listening and serving HTTP on %s (端口: %d)...\n",
 			s.config.Server.Access.BaseURL, s.config.Server.Access.Port)
-		if err := s.accessServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("访问API服务器启动失败: %v", err)
-		}
 	}()
 }
 
