@@ -37,6 +37,13 @@ type LoginResponse struct {
 	UserID   int64  `json:"userId"`
 }
 
+// ChangePasswordRequest 修改密码请求结构
+type ChangePasswordRequest struct {
+	CurrentPassword string `json:"currentPassword" binding:"required"`
+	NewPassword     string `json:"newPassword" binding:"required,min=6"`
+	ConfirmPassword string `json:"confirmPassword" binding:"required,eqfield=NewPassword"`
+}
+
 // Login 管理员登录
 func (h *AdminHandler) Login(c *gin.Context) {
 	var req LoginRequest
@@ -277,4 +284,50 @@ func (h *AdminHandler) DeleteShortLink(c *gin.Context) {
 
 	// 返回成功响应
 	c.JSON(http.StatusOK, gin.H{"message": "短链接已成功删除"})
+}
+
+// ChangePassword 修改密码
+func (h *AdminHandler) ChangePassword(c *gin.Context) {
+	// 获取当前登录用户ID
+	userID, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "未登录"})
+		return
+	}
+
+	// 解析请求参数
+	var req ChangePasswordRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "无效的请求参数"})
+		return
+	}
+
+	// 查询用户
+	var admin models.SysAdmin
+	if err := h.db.GetDB().Where("id = ?", userID).First(&admin).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "用户不存在"})
+		return
+	}
+
+	// 验证当前密码
+	if !models.CheckPassword(admin.Password, req.CurrentPassword) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "当前密码错误"})
+		return
+	}
+
+	// 生成新密码的哈希
+	hashedPassword, err := models.HashPassword(req.NewPassword)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "密码加密失败"})
+		return
+	}
+
+	// 更新密码
+	if err := h.db.GetDB().Model(&admin).Update("password", hashedPassword).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "更新密码失败"})
+		return
+	}
+
+	// 返回成功响应
+	c.JSON(http.StatusOK, gin.H{"message": "密码修改成功"})
 }

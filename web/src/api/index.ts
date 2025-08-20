@@ -36,3 +36,12 @@ export const getHistoryLinks = (params: {
 export const deleteShortLink = (id: number) => {
   return request.delete(`/short-link/${id}`);
 };
+
+// 修改密码
+export const changePassword = (data: { 
+  currentPassword: string; 
+  newPassword: string; 
+  confirmPassword: string;
+}) => {
+  return request.post('/change-password', data);
+};

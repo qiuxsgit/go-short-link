@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { Layout as AntLayout, Menu, theme, Button } from 'antd';
+import { Layout as AntLayout, Menu, theme, Button, Space } from 'antd';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import {
   DashboardOutlined,
   LinkOutlined,
   HistoryOutlined,
   LogoutOutlined,
+  KeyOutlined,
 } from '@ant-design/icons';
 import { getUserInfo } from '../utils/auth';
+import ChangePasswordModal from './ChangePasswordModal';
 
 const { Header, Content, Footer } = AntLayout;
 
@@ -20,6 +22,7 @@ const Layout: React.FC<LayoutProps> = ({ onLogout }) => {
   const location = useLocation();
   const [current, setCurrent] = useState(location.pathname);
   const userInfo = getUserInfo();
+  const [changePasswordVisible, setChangePasswordVisible] = useState(false);
   
   const {
     token: { colorBgContainer },
@@ -65,14 +68,29 @@ const Layout: React.FC<LayoutProps> = ({ onLogout }) => {
         <div style={{ color: 'white', marginRight: '20px' }}>
           欢迎，{userInfo?.username || '管理员'}
         </div>
-        <Button
-          type="primary"
-          danger
-          icon={<LogoutOutlined />}
-          onClick={handleLogout}
-        >
-          退出
-        </Button>
+        <Space>
+          <Button
+            type="primary"
+            icon={<KeyOutlined />}
+            onClick={() => setChangePasswordVisible(true)}
+          >
+            修改密码
+          </Button>
+          <Button
+            type="primary"
+            danger
+            icon={<LogoutOutlined />}
+            onClick={handleLogout}
+          >
+            退出
+          </Button>
+        </Space>
+        
+        {/* 修改密码对话框 */}
+        <ChangePasswordModal
+          visible={changePasswordVisible}
+          onCancel={() => setChangePasswordVisible(false)}
+        />
       </Header>
       <Content className="content-container">
         <div className="inner-content" style={{ background: colorBgContainer }}>

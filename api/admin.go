@@ -81,6 +81,9 @@ func SetupAdminRoutes(router *gin.Engine, shortLinkHandler *handlers.ShortLinkHa
 	privateAPI := router.Group("/api")
 	privateAPI.Use(JWTAuthMiddleware())
 	{
+		// 用户管理
+		privateAPI.POST("/change-password", adminHandler.ChangePassword)
+
 		// 短链接管理
 		linkAPI := privateAPI.Group("/short-link")
 		{
