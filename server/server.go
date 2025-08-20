@@ -138,7 +138,7 @@ func (s *Server) Start() {
 
 		// 等待服务器启动
 		<-started
-		log.Printf("Listening and serving HTTP on %s (端口: %d)...\n",
+		log.Printf("Listening and serving HTTP on Port on %s (端口: %d)...\n",
 			s.config.Server.Admin.BaseURL, s.config.Server.Admin.Port)
 	}()
 
@@ -167,7 +167,7 @@ func (s *Server) Start() {
 
 		// 等待服务器启动
 		<-started
-		log.Printf("Listening and serving HTTP on %s (端口: %d)...\n",
+		log.Printf("Listening and serving HTTP on Port %s (端口: %d)...\n",
 			s.config.Server.Access.BaseURL, s.config.Server.Access.Port)
 	}()
 }
