@@ -3,45 +3,35 @@ package main
 import (
 	"log"
 	"os"
+	"os/signal"
+	"syscall"
 
-	"github.com/gin-gonic/gin"
-	"github.com/qiuxsgit/go-short-link/handlers"
-	"github.com/qiuxsgit/go-short-link/models"
+	"github.com/qiuxsgit/go-short-link/app"
+	"github.com/qiuxsgit/go-short-link/server"
 )
 
 func main() {
-	// 创建短链接存储
-	store := models.NewMemoryStore()
-
-	// 获取基础URL，默认为localhost:8080
-	baseURL := os.Getenv("BASE_URL")
-	if baseURL == "" {
-		baseURL = "http://localhost:8080/"
+	// 初始化应用程序
+	application, err := app.Initialize()
+	if err != nil {
+		log.Fatalf("初始化应用程序失败: %v", err)
 	}
+	defer application.Cleanup()
 
-	// 创建短链接处理器
-	shortLinkHandler := handlers.NewShortLinkHandler(store, baseURL)
-
-	// 创建Gin路由
-	router := gin.Default()
-
-	// 注册API路由
-	api := router.Group("/short-link")
-	{
-		api.POST("/create", shortLinkHandler.CreateShortLink)
-	}
-
-	// 注册重定向路由
-	router.GET("/s/:code", shortLinkHandler.RedirectShortLink)
+	// 创建并初始化服务器
+	srv := server.NewServer(application.Config, application.Store)
+	srv.Initialize()
 
 	// 启动服务器
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
+	srv.Start()
 
-	log.Printf("短链接服务启动在 %s...\n", baseURL)
-	if err := router.Run(":" + port); err != nil {
-		log.Fatalf("服务器启动失败: %v", err)
+	// 等待中断信号
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+
+	// 关闭服务器
+	if err := srv.Shutdown(); err != nil {
+		log.Fatalf("关闭服务器失败: %v", err)
 	}
 }

@@ -1,0 +1,38 @@
+# 短链接服务配置文件
+
+# 服务配置
+server:
+  # 管理API服务配置（创建短链接）
+  admin:
+    port: 8081
+    baseURL: "http://localhost:8081/"
+    # IP白名单，允许访问管理API的IP列表
+    ipWhitelist:
+      - "127.0.0.1"
+      - "::1"
+      - "192.168.1.0/24"
+  
+  # 访问API服务配置（短链接重定向）
+  access:
+    port: 8082
+    baseURL: "http://localhost:8082/"
+
+# 数据库配置
+database:
+  driver: "mysql"
+  host: "localhost"
+  port: 3306
+  username: "root"
+  password: "123456"
+  dbname: "gsl"
+  charset: "utf8mb4"
+  parseTime: true
+  loc: "Local"
+  maxIdleConns: 10
+  maxOpenConns: 100
+  connMaxLifetime: 3600
+
+# 缓存配置
+cache:
+  type: "memory"
+  capacity: 1000
