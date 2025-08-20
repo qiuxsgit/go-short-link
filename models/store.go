@@ -122,6 +122,17 @@ func (c *LRUCache) Put(key string, value *ShortLink) {
 	c.cache[key] = elem
 }
 
+// Remove 从缓存中删除指定的键
+func (c *LRUCache) Remove(key string) {
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
+
+	if elem, ok := c.cache[key]; ok {
+		c.list.Remove(elem)
+		delete(c.cache, key)
+	}
+}
+
 // HybridStore 混合存储实现（MySQL + 内存缓存）
 type HybridStore struct {
 	db          *gorm.DB

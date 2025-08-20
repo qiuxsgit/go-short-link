@@ -282,6 +282,9 @@ func (h *AdminHandler) DeleteShortLink(c *gin.Context) {
 		return
 	}
 
+	// 从缓存中删除短链接
+	h.db.RemoveFromCache(link.ShortCode)
+
 	// 返回成功响应
 	c.JSON(http.StatusOK, gin.H{"message": "短链接已成功删除"})
 }

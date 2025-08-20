@@ -118,3 +118,9 @@ func (s *GormStore) Close() error {
 func (s *GormStore) GetDB() *gorm.DB {
 	return s.db
 }
+
+// RemoveFromCache 从缓存中删除短链接
+func (s *GormStore) RemoveFromCache(shortCode string) {
+	// 从缓存中删除
+	s.cache.Remove(shortCode)
+}
