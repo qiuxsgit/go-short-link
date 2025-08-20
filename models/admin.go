@@ -63,6 +63,7 @@ func EnsureAdminExists(db *gorm.DB) (string, error) {
 		admin := &SysAdmin{
 			Username:  "admin",
 			Password:  hashedPassword,
+			LastLogin: time.Now(), // 设置为当前时间而不是零值
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
 		}
