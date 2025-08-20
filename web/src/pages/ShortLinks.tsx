@@ -46,7 +46,7 @@ const ShortLinks: React.FC = () => {
   // 首次加载和分页/筛选条件变化时获取数据
   useEffect(() => {
     fetchLinks();
-  }, [pagination.current, pagination.pageSize, filters]);
+  }, [pagination, filters]);
 
   // 处理表格分页变化
   const handleTableChange = (pagination: any) => {
