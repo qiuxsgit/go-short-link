@@ -62,3 +62,10 @@ tasks:
     # 历史表前缀
     historyTablePrefix: "short_links_history_"
 
+# JWT配置
+jwt:
+  # 密钥
+  secret: "go-short-link-secret-key"
+  # 过期时间（小时）
+  expireHours: 24
+

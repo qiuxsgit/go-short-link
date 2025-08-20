@@ -17,6 +17,7 @@ type Config struct {
 	Redis    RedisConfig    `yaml:"redis"`
 	Cache    CacheConfig    `yaml:"cache"`
 	Tasks    TasksConfig    `yaml:"tasks"`
+	JWT      JWTConfig      `yaml:"jwt"`
 }
 
 // ServerConfig 服务器配置
@@ -82,6 +83,12 @@ type CleanExpiredLinksConfig struct {
 	Enabled            bool   `yaml:"enabled"`
 	BatchSize          int    `yaml:"batchSize"`
 	HistoryTablePrefix string `yaml:"historyTablePrefix"`
+}
+
+// JWTConfig JWT配置
+type JWTConfig struct {
+	Secret      string `yaml:"secret"`
+	ExpireHours int    `yaml:"expireHours"`
 }
 
 // LoadConfig 从文件加载配置

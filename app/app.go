@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 
@@ -36,6 +37,9 @@ func Initialize() (*App, error) {
 		return nil, err
 	}
 
+	// 设置JWT密钥
+	utils.SetJWTSecret(config.JWT.Secret)
+
 	// 创建Redis客户端
 	redisClient := redis.NewClient(&redis.Options{
 		Addr:     config.Redis.Addr,
@@ -61,6 +65,22 @@ func Initialize() (*App, error) {
 
 	// 获取GORM DB实例
 	db := gormStore.GetDB()
+
+	// 确保管理员表存在
+	if err := db.AutoMigrate(&models.SysAdmin{}); err != nil {
+		return nil, fmt.Errorf("自动迁移管理员表失败: %v", err)
+	}
+
+	// 确保至少存在一个管理员账户
+	initialPassword, err := models.EnsureAdminExists(db)
+	if err != nil {
+		return nil, fmt.Errorf("确保管理员账户存在失败: %v", err)
+	}
+
+	// 如果生成了初始密码，打印出来
+	if initialPassword != "" {
+		log.Printf("已创建初始管理员账户，用户名: admin，密码: %s", initialPassword)
+	}
 
 	// 创建定时任务调度器
 	taskScheduler := tasks.NewScheduler(config)

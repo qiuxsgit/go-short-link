@@ -6,8 +6,12 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
 	"time"
 
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/qiuxsgit/go-short-link/api"
 	"github.com/qiuxsgit/go-short-link/conf"
@@ -40,15 +44,55 @@ func (s *Server) Initialize() {
 		gin.SetMode(gin.DebugMode)
 	}
 
+	// 获取GORM存储实例
+	gormStore, ok := s.store.(*models.GormStore)
+	if !ok {
+		log.Fatal("存储必须是GormStore类型")
+	}
+
 	// 创建管理API处理器
 	adminHandler := handlers.NewShortLinkHandler(s.store, s.config.Server.Admin.BaseURL)
 
 	// 创建访问API处理器
 	accessHandler := handlers.NewShortLinkHandler(s.store, s.config.Server.Access.BaseURL)
 
+	// 创建管理员处理器
+	adminUserHandler := handlers.NewAdminHandler(gormStore, s.config)
+
 	// 创建管理API路由
 	adminRouter := gin.Default()
-	api.SetupAdminRoutes(adminRouter, adminHandler, &s.config.Server.Admin)
+
+	// 添加静态文件服务
+	adminRouter.Use(func() gin.HandlerFunc {
+		// 检查static目录是否存在
+		staticDir := "static"
+		if _, err := os.Stat(staticDir); os.IsNotExist(err) {
+			log.Printf("警告: 静态文件目录 %s 不存在，前端将不可用", staticDir)
+			return func(c *gin.Context) {
+				c.Next()
+			}
+		}
+
+		// 使用静态文件中间件
+		handler := static.Serve("/", static.LocalFile(staticDir, false))
+		return func(c *gin.Context) {
+			// 如果是API请求，跳过静态文件处理
+			if strings.HasPrefix(c.Request.URL.Path, "/api") ||
+				strings.HasPrefix(c.Request.URL.Path, "/s/") {
+				c.Next()
+				return
+			}
+
+			handler(c)
+
+			// 如果找不到静态文件，返回index.html（支持SPA路由）
+			if c.Writer.Status() == http.StatusNotFound {
+				c.File(filepath.Join(staticDir, "index.html"))
+			}
+		}
+	}())
+
+	api.SetupAdminRoutes(adminRouter, adminHandler, adminUserHandler, &s.config.Server.Admin)
 
 	// 创建访问API路由
 	accessRouter := gin.Default()
