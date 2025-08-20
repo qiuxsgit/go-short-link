@@ -32,6 +32,8 @@ go.work.sum
 # .vscode/
 
 /web/node_modules/
+/web/yarn.lock
+/web/package-lock.json
 go-short-link
 /static/*
 /web/build

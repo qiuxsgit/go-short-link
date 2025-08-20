@@ -5,11 +5,11 @@ cd web
 
 # 安装依赖
 echo "安装前端依赖..."
-npm install
+yarn
 
 # 构建前端代码
 echo "构建前端代码..."
-npm run build
+yarn build
 
 # 创建静态文件目录
 mkdir -p ../static
