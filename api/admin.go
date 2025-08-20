@@ -65,7 +65,7 @@ func IPWhitelistMiddleware(config *conf.AdminServerConfig) gin.HandlerFunc {
 // SetupAdminRoutes 设置管理API路由
 func SetupAdminRoutes(router *gin.Engine, shortLinkHandler *handlers.ShortLinkHandler, adminHandler *handlers.AdminHandler, config *conf.AdminServerConfig) {
 	// 添加IP白名单中间件
-	router.Use(IPWhitelistMiddleware(config))
+	// router.Use(IPWhitelistMiddleware(config))
 
 	// 公共API路由（无需认证）
 	publicAPI := router.Group("/api")
