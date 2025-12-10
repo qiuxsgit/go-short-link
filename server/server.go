@@ -59,9 +59,6 @@ func (s *Server) Initialize() {
 	// 创建管理员处理器
 	adminUserHandler := handlers.NewAdminHandler(gormStore, s.config)
 
-	// 创建文档处理器
-	docHandler := handlers.NewDocHandler(s.config)
-
 	// 创建管理API路由
 	adminRouter := gin.Default()
 
@@ -96,7 +93,7 @@ func (s *Server) Initialize() {
 		}
 	}())
 
-	api.SetupAdminRoutes(adminRouter, adminHandler, adminUserHandler, docHandler, &s.config.Server.Admin)
+	api.SetupAdminRoutes(adminRouter, adminHandler, adminUserHandler, &s.config.Server.Admin)
 
 	// 创建访问API路由
 	accessRouter := gin.Default()

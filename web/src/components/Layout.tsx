@@ -7,6 +7,7 @@ import {
   HistoryOutlined,
   LogoutOutlined,
   KeyOutlined,
+  BookOutlined,
 } from '@ant-design/icons';
 import { getUserInfo } from '../utils/auth';
 import ChangePasswordModal from './ChangePasswordModal';
@@ -79,6 +80,11 @@ const Layout: React.FC<LayoutProps> = ({ onLogout }) => {
               key: '/history-links',
               icon: <HistoryOutlined />,
               label: '历史短链接',
+            },
+            {
+              key: '/api-doc',
+              icon: <BookOutlined />,
+              label: 'API文档',
             },
           ]}
           style={{ 

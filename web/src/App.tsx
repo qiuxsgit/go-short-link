@@ -6,6 +6,7 @@ import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import ShortLinks from './pages/ShortLinks';
 import HistoryLinks from './pages/HistoryLinks';
+import ApiDoc from './pages/ApiDoc';
 import { getToken, removeToken } from './utils/auth';
 
 const App: React.FC = () => {
@@ -47,6 +48,7 @@ const App: React.FC = () => {
           <Route index element={<Dashboard />} />
           <Route path="short-links" element={<ShortLinks />} />
           <Route path="history-links" element={<HistoryLinks />} />
+          <Route path="api-doc" element={<ApiDoc />} />
         </Route>
         
         {/* 默认重定向 */}
