@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Table, Button, Input, Space, Modal, Form, InputNumber, message, Tag } from 'antd';
 import { SearchOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { getShortLinks, createShortLink, deleteShortLink } from '../api';
@@ -23,7 +23,7 @@ const ShortLinks: React.FC = () => {
   });
 
   // 获取短链接列表
-  const fetchLinks = async () => {
+  const fetchLinks = useCallback(async () => {
     try {
       setLoading(true);
       const response: any = await getShortLinks({
@@ -41,12 +41,12 @@ const ShortLinks: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [pagination, filters]);
 
   // 首次加载和分页/筛选条件变化时获取数据
   useEffect(() => {
     fetchLinks();
-  }, [pagination, filters]);
+  }, [fetchLinks]);
 
   // 处理表格分页变化
   const handleTableChange = (pagination: any) => {
