@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Table, Tag, Typography, Space, Collapse, Divider } from 'antd';
+import { Card, Table, Tag, Typography, Space, Collapse } from 'antd';
 import { BookOutlined, ApiOutlined, LockOutlined, InfoCircleOutlined } from '@ant-design/icons';
 
 const { Title, Paragraph, Text } = Typography;
