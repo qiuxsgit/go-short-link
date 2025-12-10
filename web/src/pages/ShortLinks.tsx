@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Table, Button, Input, Space, Modal, Form, InputNumber, message, Tag } from 'antd';
+import { Table, Button, Input, Space, Modal, Form, InputNumber, message, Tag, Typography } from 'antd';
 import { SearchOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { getShortLinks, createShortLink, deleteShortLink } from '../api';
 
@@ -127,7 +127,7 @@ const ShortLinks: React.FC = () => {
       dataIndex: 'shortCode',
       key: 'shortCode',
       render: (text: string, record: any) => (
-        <a href={record.shortLink || `/s/${text}`} target="_blank" rel="noopener noreferrer">{text}</a>
+        <Typography.Link href={record.shortLink} copyable={{ text: record.shortLink}} target="_blank" rel="noopener noreferrer">{text}</Typography.Link>
       ),
     },
     {
@@ -135,7 +135,7 @@ const ShortLinks: React.FC = () => {
       dataIndex: 'originalUrl',
       key: 'originalUrl',
       ellipsis: true,
-      render: (text: string) => <a href={text} target="_blank" rel="noopener noreferrer">{text}</a>,
+      render: (text: string) => <Typography.Link href={text} copyable={{ text: text}} target="_blank" rel="noopener noreferrer">{text}</Typography.Link>,
     },
     {
       title: '创建时间',
