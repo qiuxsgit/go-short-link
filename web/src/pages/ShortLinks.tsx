@@ -185,7 +185,7 @@ const ShortLinks: React.FC = () => {
       <h1>短链接管理</h1>
       
       {/* 搜索和操作区域 */}
-      <div className="table-operations">
+      <div className="table-operations" style={{ marginBottom: 16 }}>
         <Form
           form={searchForm}
           layout="inline"

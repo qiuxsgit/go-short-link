@@ -59,6 +59,9 @@ func (s *Server) Initialize() {
 	// 创建管理员处理器
 	adminUserHandler := handlers.NewAdminHandler(gormStore, s.config)
 
+	// 创建文档处理器
+	docHandler := handlers.NewDocHandler(s.config)
+
 	// 创建管理API路由
 	adminRouter := gin.Default()
 
@@ -78,7 +81,8 @@ func (s *Server) Initialize() {
 		return func(c *gin.Context) {
 			// 如果是API请求，跳过静态文件处理
 			if strings.HasPrefix(c.Request.URL.Path, "/api") ||
-				strings.HasPrefix(c.Request.URL.Path, "/s/") {
+				strings.HasPrefix(c.Request.URL.Path, "/s/") ||
+				c.Request.URL.Path == "/api_doc" {
 				c.Next()
 				return
 			}
@@ -92,7 +96,7 @@ func (s *Server) Initialize() {
 		}
 	}())
 
-	api.SetupAdminRoutes(adminRouter, adminHandler, adminUserHandler, &s.config.Server.Admin)
+	api.SetupAdminRoutes(adminRouter, adminHandler, adminUserHandler, docHandler, &s.config.Server.Admin)
 
 	// 创建访问API路由
 	accessRouter := gin.Default()

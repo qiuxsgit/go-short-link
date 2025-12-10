@@ -51,37 +51,67 @@ const Dashboard: React.FC = () => {
   return (
     <div>
       <h1>仪表盘</h1>
-      <Row gutter={16}>
-        <Col span={8}>
-          <Card>
+      <Row gutter={[16, 16]}>
+        <Col xs={24} sm={12} lg={8}>
+          <Card 
+            hoverable
+            style={{
+              background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
+              border: '1px solid rgba(24, 144, 255, 0.2)',
+            }}
+          >
             <Statistic
               title="活跃短链接"
               value={activeLinks}
               loading={loading}
-              prefix={<LinkOutlined />}
-              valueStyle={{ color: '#3f8600' }}
+              prefix={<LinkOutlined style={{ color: '#1890ff' }} />}
+              valueStyle={{ 
+                color: '#1890ff',
+                fontSize: 32,
+                fontWeight: 600,
+              }}
             />
           </Card>
         </Col>
-        <Col span={8}>
-          <Card>
+        <Col xs={24} sm={12} lg={8}>
+          <Card 
+            hoverable
+            style={{
+              background: 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)',
+              border: '1px solid rgba(239, 68, 68, 0.2)',
+            }}
+          >
             <Statistic
               title="过期短链接"
               value={expiredLinks}
               loading={loading}
-              prefix={<LinkOutlined />}
-              valueStyle={{ color: '#cf1322' }}
+              prefix={<LinkOutlined style={{ color: '#ef4444' }} />}
+              valueStyle={{ 
+                color: '#ef4444',
+                fontSize: 32,
+                fontWeight: 600,
+              }}
             />
           </Card>
         </Col>
-        <Col span={8}>
-          <Card>
+        <Col xs={24} sm={12} lg={8}>
+          <Card 
+            hoverable
+            style={{
+              background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)',
+              border: '1px solid rgba(24, 144, 255, 0.2)',
+            }}
+          >
             <Statistic
               title="历史短链接"
               value={historyLinks}
               loading={loading}
-              prefix={<HistoryOutlined />}
-              valueStyle={{ color: '#1890ff' }}
+              prefix={<HistoryOutlined style={{ color: '#1890ff' }} />}
+              valueStyle={{ 
+                color: '#1890ff',
+                fontSize: 32,
+                fontWeight: 600,
+              }}
             />
           </Card>
         </Col>

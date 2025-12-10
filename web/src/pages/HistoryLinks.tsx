@@ -40,13 +40,6 @@ const HistoryLinks: React.FC = () => {
         originalUrl: filters.originalUrl || undefined,
       });
       
-      if (response.debug_exists === false) {
-        // 如果表不存在，显示提示信息
-        const year = filters.month.slice(0, 2);
-        const month = filters.month.slice(2);
-        message.info(`20${year}年${month}月没有历史短链接记录`);
-      }
-      
       setLinks(response.links || []);
       setTotal(response.total || 0);
     } catch (error) {
@@ -163,7 +156,7 @@ const HistoryLinks: React.FC = () => {
       <h1>历史短链接</h1>
       
       {/* 搜索和操作区域 */}
-      <div className="table-operations">
+      <div className="table-operations" style={{ marginBottom: 16 }}>
         <Form
           form={searchForm}
           layout="inline"
