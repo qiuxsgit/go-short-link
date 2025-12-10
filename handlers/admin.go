@@ -126,10 +126,11 @@ func (h *AdminHandler) GetShortLinks(c *gin.Context) {
 		return
 	}
 
-	// 格式化日期
+	// 格式化日期并构建完整短链接URL
 	formattedLinks := make([]models.FormattedShortLink, len(links))
+	accessBaseURL := h.config.Server.Access.BaseURL
 	for i, link := range links {
-		formattedLinks[i] = link.ToFormattedShortLink()
+		formattedLinks[i] = link.ToFormattedShortLink(accessBaseURL)
 	}
 
 	// 返回响应
@@ -218,10 +219,11 @@ func (h *AdminHandler) GetHistoryLinks(c *gin.Context) {
 		return
 	}
 
-	// 格式化日期
+	// 格式化日期并构建完整短链接URL
 	formattedLinks := make([]models.FormattedShortLink, len(links))
+	accessBaseURL := h.config.Server.Access.BaseURL
 	for i, link := range links {
-		formattedLinks[i] = link.ToFormattedShortLink()
+		formattedLinks[i] = link.ToFormattedShortLink(accessBaseURL)
 	}
 
 	// 返回响应

@@ -120,6 +120,9 @@ const HistoryLinks: React.FC = () => {
       title: '短链接代码',
       dataIndex: 'shortCode',
       key: 'shortCode',
+      render: (text: string, record: any) => (
+        <a href={record.shortLink || `/s/${text}`} target="_blank" rel="noopener noreferrer">{text}</a>
+      ),
     },
     {
       title: '原始链接',

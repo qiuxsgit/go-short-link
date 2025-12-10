@@ -51,7 +51,7 @@ func (s *Server) Initialize() {
 	}
 
 	// 创建管理API处理器
-	adminHandler := handlers.NewShortLinkHandler(s.store, s.config.Server.Admin.BaseURL)
+	adminHandler := handlers.NewShortLinkHandler(s.store, s.config.Server.Access.BaseURL)
 
 	// 创建访问API处理器
 	accessHandler := handlers.NewShortLinkHandler(s.store, s.config.Server.Access.BaseURL)

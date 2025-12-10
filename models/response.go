@@ -2,12 +2,15 @@ package models
 
 import (
 	"time"
+
+	"github.com/qiuxsgit/go-short-link/utils"
 )
 
 // FormattedShortLink 格式化后的短链接响应结构
 type FormattedShortLink struct {
 	ID          int64  `json:"id"`
 	ShortCode   string `json:"shortCode"`
+	ShortLink   string `json:"shortLink"`
 	OriginalURL string `json:"originalUrl"`
 	CreatedAt   string `json:"createdAt"`
 	ExpiresAt   string `json:"expiresAt"`
@@ -24,10 +27,12 @@ func FormatTime(t time.Time) string {
 }
 
 // ToFormattedShortLink 将DBShortLink转换为FormattedShortLink
-func (db *DBShortLink) ToFormattedShortLink() FormattedShortLink {
+// baseURL 是访问API服务的BaseURL，用于构建完整的短链接URL
+func (db *DBShortLink) ToFormattedShortLink(baseURL string) FormattedShortLink {
 	return FormattedShortLink{
 		ID:          db.ID,
 		ShortCode:   db.ShortCode,
+		ShortLink:   utils.BuildShortLink(baseURL, db.ShortCode),
 		OriginalURL: db.OriginalURL,
 		CreatedAt:   FormatTime(db.CreatedAt),
 		ExpiresAt:   FormatTime(db.ExpiresAt),
