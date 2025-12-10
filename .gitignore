@@ -38,3 +38,4 @@ go-short-link
 /static/*
 /web/build
 server.log
+dump.rdb
