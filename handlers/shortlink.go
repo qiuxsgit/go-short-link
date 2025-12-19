@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/qiuxsgit/go-short-link/models"
 	"github.com/qiuxsgit/go-short-link/utils"
+	"github.com/sirupsen/logrus"
 )
 
 // ShortLinkHandler 处理短链接相关的请求
@@ -27,6 +28,7 @@ func NewShortLinkHandler(store models.Store, baseURL string) *ShortLinkHandler {
 func (h *ShortLinkHandler) CreateShortLink(c *gin.Context) {
 	var req models.CreateShortLinkRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
+		logrus.Errorf("CreateShortLink bind params error: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "无效的请求参数"})
 		return
 	}
